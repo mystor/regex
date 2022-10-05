@@ -79,8 +79,8 @@ ffi_fn! {
         let len = unsafe { CStr::from_ptr(pattern).to_bytes().len() };
         let pat = pattern as *const u8;
         let mut err = Error::new(ErrorKind::None);
-        let re = rure_compile(
-            pat, len, RURE_DEFAULT_FLAGS, ptr::null(), &mut err);
+        let re = unsafe { rure_compile(
+            pat, len, RURE_DEFAULT_FLAGS, ptr::null(), &mut err) };
         if err.is_err() {
             let _ = writeln!(&mut io::stderr(), "{}", err);
             let _ = writeln!(
@@ -345,7 +345,7 @@ ffi_fn! {
             // Don't accept empty matches immediately following a match.
             // Just move on to the next match.
             if Some(e) == it.last_match {
-                return rure_iter_next(it, haystack, len, match_info);
+                return unsafe { rure_iter_next(it, haystack, len, match_info) };
             }
         } else {
             it.last_end = e;
@@ -387,7 +387,7 @@ ffi_fn! {
             // Don't accept empty matches immediately following a match.
             // Just move on to the next match.
             if Some(e) == it.last_match {
-                return rure_iter_next_captures(it, haystack, len, captures);
+                return unsafe { rure_iter_next_captures(it, haystack, len, captures) };
             }
         } else {
             it.last_end = e;
